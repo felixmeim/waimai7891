@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>外卖</title>
+    <link rel="stylesheet" href="assets/tailwind.css">
+    <link rel="stylesheet" href="styles.css">
+    <!-- PWA 配置 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="请假管理">
+</head>
+<body>
+<div id="app">
+
+    <!-- ================= 第一层：企业微信工作台 ================= -->
+    <section class="screen" id="screen-workbench" data-page="workbench">
+        <header class="wb-nav">
+            <h1 class="wb-nav__title">工作台</h1>
+            <div class="wb-nav__actions">
+                <button type="button" class="wb-nav__btn" aria-label="搜索">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M16.5 16.5L21 21"></path></svg>
+                </button>
+                <button type="button" class="wb-nav__btn" aria-label="管理">
+                    <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M4 12h16M4 17h6"></path><circle cx="17" cy="7" r="1.7" fill="currentColor" stroke="none"></circle><circle cx="14" cy="17" r="1.7" fill="currentColor" stroke="none"></circle></svg>
+                </button>
+            </div>
+        </header>
+        <div class="wb-scroll" id="workbench-scroll">
+            <!-- 顶部轮播卡：双击卡片（「掌上校园」图标以外的地方）切页 -->
+            <div class="wb-banner" id="wb-banner">
+                <div class="wb-banner__track" id="wb-banner-track">
+                    <img class="wb-banner__slide" src="assets/workbench-card-ai.jpg" alt="" draggable="false">
+                    <img class="wb-banner__slide" src="assets/workbench-card-wb.jpg" alt="" draggable="false">
+                </div>
+            </div>
+            <div class="wb-body" id="workbench-body"></div>
+            <div class="wb-recent"><span>用过的小程序</span><span>试试同事在用的 ›</span></div>
+        </div>
+        <nav class="wb-tabbar">
+            <button type="button" class="wb-tab">
+                <img src="assets/icons/workbench/message.png" alt=""><span>消息</span>
+            </button>
+            <button type="button" class="wb-tab">
+                <img src="assets/icons/workbench/doc.png" alt=""><span>文档</span>
+            </button>
+            <button type="button" class="wb-tab">
+                <img src="assets/icons/workbench/contacts.png" alt=""><span>通讯录</span>
+            </button>
+            <button type="button" class="wb-tab wb-tab--active">
+                <img src="assets/icons/workbench/workbench.png" alt=""><span>工作台</span>
+            </button>
+            <button type="button" class="wb-tab" data-action="open-food">
+                <img src="assets/icons/workbench/me.png" alt=""><span>我</span>
+            </button>
+        </nav>
+    </section>
+
+    <!-- ================= 第二层：掌上校园首页 ================= -->
+    <section class="screen" id="screen-campus" data-page="campus">
+        <header class="campus-nav">
+            <button type="button" class="campus-nav__btn" id="campus-back" aria-label="返回">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5"></path><path d="M11 5l-7 7 7 7"></path></svg>
+            </button>
+            <h1 class="campus-nav__title">掌上校园</h1>
+            <button type="button" class="campus-nav__btn campus-nav__btn--more" id="campus-more" aria-label="更多">
+                <svg viewBox="0 0 24 24" width="23" height="23" fill="currentColor"><circle cx="12" cy="5" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="12" cy="19" r="1.7"></circle></svg>
+            </button>
+        </header>
+        <div class="campus-scroll" id="campus-scroll">
+            <div class="campus-banner"><img src="assets/campus-banner.jpg" alt=""></div>
+            <div class="campus-user">
+                <img class="campus-user__avatar" src="assets/campus-avatar.png" alt="">
+                <span class="campus-user__name">芥子一梦</span>
+                <span class="campus-user__link">个人信息
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg>
+                </span>
+            </div>
+            <div class="campus-body" id="campus-body"></div>
+            <div class="campus-tail"></div>
+        </div>
+    </section>
+
+    <!-- ================= 第三层：自定义填写（仅从「申请」进入） ================= -->
+    <section class="screen" id="screen-form" data-page="form">
+        <div id="page-form" class="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg mt-10 mb-10">
+            <h2 class="text-2xl font-bold mb-6 text-center text-blue-600">请假信息填写</h2>
+            <form id="leave-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">姓名</label>
+                    <input type="text" id="name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">请假类型</label>
+                    <select id="leaveType" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                        <option value="病假">病假</option>
+                        <option value="事假">事假</option>
+                        <option value="其他">其他</option>
+                        <option value="节假日及寒暑假请假">节假日及寒暑假请假</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">开始时间</label>
+                    <input type="datetime-local" id="startTime" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">结束时间</label>
+                    <input type="datetime-local" id="endTime" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">请假理由</label>
+                    <textarea id="reason" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">申请时间</label>
+                    <input type="datetime-local" id="applyTime" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">导员名字</label>
+                    <input type="text" id="counselorName" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">审核通过时间</label>
+                    <input type="datetime-local" id="approveTime" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" required>
+                </div>
+                <button type="button" id="generate-btn" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-300">生成</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ================= 生成记录（申请记录）返回页 ================= -->
+    <section class="screen" id="screen-records" data-page="records">
+        <header class="rec-nav">
+            <div class="rec-nav__left">
+                <button type="button" class="rec-nav__btn" id="rec-back" aria-label="返回">
+                    <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5"></path><path d="M11 5l-7 7 7 7"></path></svg>
+                </button>
+                <button type="button" class="rec-nav__btn" id="rec-close" aria-label="关闭">
+                    <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+                </button>
+            </div>
+            <h1 class="rec-nav__title">请假管理</h1>
+            <button type="button" class="rec-nav__btn rec-nav__btn--more" id="rec-more" aria-label="更多">
+                <svg viewBox="0 0 24 24" width="23" height="23" fill="currentColor"><circle cx="12" cy="5" r="1.7"></circle><circle cx="12" cy="12" r="1.7"></circle><circle cx="12" cy="19" r="1.7"></circle></svg>
+            </button>
+        </header>
+
+        <div class="rec-body" id="rec-scroll">
+            <nav class="rec-crumb">
+                <span class="rec-crumb__home">
+                    <svg viewBox="0 0 20 20" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M10 2c-2.7 0-4.9 2.2-4.9 4.9 0 3.5 4.1 9.2 4.5 9.7a.5.5 0 0 0 .8 0c.4-.5 4.5-6.2 4.5-9.7C14.9 4.2 12.7 2 10 2zm0 7a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2z"></path></svg>
+                    首页
+                </span>
+                <svg class="rec-crumb__sep" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+                <span class="rec-crumb__cur">请假管理</span>
+            </nav>
+
+            <div class="rec-head">
+                <h2 class="rec-head__title">申请记录</h2>
+                <div class="rec-filter">
+                    <button type="button" class="rec-filter__btn" id="rec-filter-btn" aria-haspopup="listbox" aria-expanded="false">
+                        <span id="rec-filter-label">全部状态</span>
+                        <svg class="rec-filter__caret" viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M12 15.5l-6-6 1.4-1.4L12 12.7l4.6-4.6L18 9.5z"></path></svg>
+                    </button>
+                    <ul class="rec-filter__menu" id="rec-filter-menu" role="listbox" hidden>
+                        <li role="option" data-value="all" aria-selected="true">全部状态</li>
+                        <li role="option" data-value="pass" aria-selected="false">审核通过</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="rec-list" id="rec-list"></div>
+
+            <div class="rec-empty" id="rec-empty" hidden>
+                <svg viewBox="0 0 64 64" width="64" height="64" fill="none" aria-hidden="true">
+                    <rect x="12" y="10" width="40" height="46" rx="4" stroke="#D8DCE6" stroke-width="2.5"></rect>
+                    <path d="M21 24h22M21 33h22M21 42h14" stroke="#D8DCE6" stroke-width="2.5" stroke-linecap="round"></path>
+                </svg>
+                <p>暂无申请记录</p>
+            </div>
+
+            <div class="rec-list__tail" id="rec-list-tail"></div>
+        </div>
+
+        <!-- 悬浮「申请」按钮：随滑动始终固定在屏幕底部 -->
+        <button type="button" class="rec-apply" id="rec-apply">申请</button>
+    </section>
+
+    <!-- ================= 第二个页面：生成结果（截图页，原有） ================= -->
+    <section class="screen" id="screen-shot" data-page="shot">
+        <div id="page-result" class="h-screen flex flex-col bg-[#F6F7F9]">
+            <!-- 头部固定部分 -->
+            <div class="fixed top-0 left-0 right-0 z-50 bg-white">
+                <!-- 头部导航 -->
+                <header class="px-4 py-3 flex items-center justify-between border-b border-gray-100">
+                    <div class="flex items-center space-x-4">
+                        <button id="nav-back-arrow" class="p-1 -ml-1 hover:bg-gray-100 rounded-full transition-colors">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <button id="nav-back-x" class="p-1 hover:bg-gray-100 rounded-full transition-colors">
+                            <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <h1 class="text-lg font-medium absolute left-1/2 -translate-x-1/2">请假管理</h1>
+                    <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                </header>
+
+                <!-- 面包屑 -->
+                <div class="bg-[#EFF3FD] px-4 py-2 text-[13px] text-gray-600 flex items-center">
+                    <span class="text-[#4D7CFE] flex items-center">
+                        <!-- GPS 定位图标 -->
+                        <svg class="w-4 h-4 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                        </svg>
+                        首页
+                    </span>
+                    <!-- 灰色箭头图标样式 (继续放大到 w-4 h-4) -->
+                    <svg class="w-4 h-4 mx-1 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span class="text-black">请假管理</span>
+                    <svg class="w-4 h-4 mx-1 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span class="text-black">请假管理</span>
+                </div>
+            </div>
+
+            <!-- 内容滚动部分 -->
+            <div id="scroll-content" class="flex-1 overflow-y-auto mt-[90px]">
+                <!-- 用户信息 -->
+                <div class="bg-white px-4 pt-6 pb-4 flex items-center mb-2">
+                    <!-- 用户头像图片 -->
+                    <img src="avatar.png" class="w-14 h-14 rounded-full mr-4 object-cover" alt="头像">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg font-bold" id="display-userName"></span>
+                            <svg class="w-4 h-4 text-[#4D7CFE]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="9" cy="15" r="6"></circle>
+                                <line x1="14" y1="10" x2="21" y2="3"></line>
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="text-gray-400 text-sm">|</div>
+                    </div>
+                </div>
+
+                <!-- 请假信息 -->
+                <div class="bg-white p-4 relative mb-6"> <!-- 间距从 mb-4 增大到 mb-6 -->
+                    <h2 class="text-lg font-bold flex items-center mb-2 before:content-[''] before:w-[3px] before:h-5 before:bg-blue-500 before:mr-2">请假信息</h2>
+
+                    <!-- 已通过印章图片 -->
+                    <div class="absolute top-4 right-6">
+                        <img src="stamp.png" class="w-20 h-20 opacity-80" alt="已通过印章">
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <div class="info-row"><span class="info-label">请假类型：</span><span id="display-leaveType" class="info-value"></span></div>
+                        <div class="info-row"><span class="info-label">请假去向：</span><span class="info-value"></span></div>
+                        <div class="info-row"><span class="info-label">详细地址：</span><span class="info-value"></span></div>
+                        <div class="info-row"><span class="info-label">开始时间：</span><span id="display-startTime" class="info-value"></span></div>
+                        <div class="info-row"><span class="info-label">结束时间：</span><span id="display-endTime" class="info-value"></span></div>
+                        <div class="info-row"><span class="info-label">统计时长：</span><span class="info-value">天小时分钟</span></div>
+                        <div class="info-row"><span class="info-label">紧急联系人：</span><span class="info-value"></span></div>
+                        <div class="info-row"><span class="info-label">紧急联系人电话：</span><span class="info-value"></span></div>
+                        <div class="info-row"><span class="info-label">请假理由：</span><span id="display-reason" class="info-value"></span></div>
+                        <div class="info-row"><span class="info-label">请假状态：</span><span class="text-blue-500 info-value">审核通过</span></div>
+                        <div class="info-row"><span class="info-label">销假状态：</span><span class="info-value"></span></div>
+                        <div class="info-row"><span class="info-label">请假附件：</span><span class="info-value"></span></div>
+                        <div class="h-2"></div> <!-- 空行从 h-6 减小到 h-2 -->
+                    </div>
+                </div>
+
+                <!-- 办理进度 -->
+                <div id="timeline-module" class="bg-white p-3">
+                    <h2 class="text-lg font-bold flex items-center mb-2 before:content-[''] before:w-[3px] before:h-3.5 before:bg-blue-500 before:mr-2 before:rounded-full">办理进度</h2>
+
+                    <div class="flex relative mb-4">
+                        <!-- 左侧整体进度轴图片 (恢复尺寸 w-5) -->
+                        <div class="w-5 shrink-0 mt-[2px] ml-[-2px]">
+                            <img src="timeline.png" class="w-full h-auto" alt="进度轴">
+                        </div>
+
+                        <!-- 右侧文字内容 (恢复更大的间距 mt-4) -->
+                        <div class="flex-1 ml-2 text-[13px] leading-tight mt-[1px]">
+                            <!-- 第一行：申请信息 -->
+                            <div class="flex justify-between items-center h-[18px]">
+                                <span class="font-medium text-black">申请 <span class="text-green-500 ml-2">申请</span></span>
+                                <span id="display-applyTime" class="text-gray-400 text-sm"></span>
+                            </div>
+
+                            <!-- 第二行：申请人姓名 (mt-4) -->
+                            <div id="display-applyName" class="timeline-name h-[18px] flex items-center mt-4 text-[14px]"></div>
+
+                            <!-- 第三行：审核信息 (mt-4) -->
+                            <div class="flex justify-between items-center h-[18px] mt-[18px]">
+                                <span class="font-medium text-black">辅导员审核 <span class="text-green-500 ml-2">审核通过</span></span>
+                                <span id="approveTime-container" class="text-gray-400 text-sm"><span id="display-approveTime"></span></span>
+                            </div>
+
+                            <!-- 第四行：批准人姓名 (mt-4) -->
+                            <div id="display-counselorName" class="timeline-name h-[18px] flex items-center mt-4 text-[14px]"></div>
+
+                            <!-- 第五行：结束 (mt-4) -->
+                            <div class="flex items-center h-[18px] mt-[18px]">
+                                <span class="font-medium text-black">结束</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-20"></div>
+            </div>
+        </div>
+    </section>
+
+<!-- ================= 第三层：外卖 App（工作台「我」进入） ================= -->
+        <section class="screen screen--food" id="screen-food-home" data-page="food-home"></section>
+    <section class="screen screen--food" id="screen-food" data-page="food"></section>
+    <section class="screen screen--food" id="screen-food-address" data-page="food-address"></section>
+    <section class="screen screen--food" id="screen-food-orders" data-page="food-orders"></section>
+    <section class="screen screen--food" id="screen-food-order-detail" data-page="food-order-detail"></section>
+    <section class="screen screen--food" id="screen-food-messages" data-page="food-messages"></section>
+    <section class="screen screen--food" id="screen-food-chat" data-page="food-chat"></section>
+    <section class="screen screen--food" id="screen-food-ai" data-page="food-ai"></section>
+    <section class="screen screen--food" id="screen-food-shop" data-page="food-shop"></section>
+    <section class="screen screen--food" id="screen-food-item" data-page="food-item"></section>
+    <section class="screen" id="screen-splash" data-page="splash"></section>
+    <section class="screen" id="screen-leave-loading" data-page="leave-loading"></section>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
